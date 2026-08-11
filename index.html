@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2F5D50">
+<title>Momentos</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button id="btn-back" class="icon-btn hidden" aria-label="Voltar">&#8592;</button>
+  <h1 class="brand" id="topbar-title">Momentos</h1>
+  <button id="btn-settings" class="icon-btn" aria-label="Definições">&#9881;</button>
+</header>
+
+<div id="backup-banner" class="banner hidden">
+  <span id="backup-banner-text"></span>
+  <span class="banner-actions">
+    <button id="backup-now" class="link-btn">Exportar</button>
+    <button id="backup-snooze" class="link-btn">Depois</button>
+  </span>
+</div>
+
+<main>
+
+  <!-- ================= LISTA / LINHA DO TEMPO ================= -->
+  <section id="view-list" class="view">
+    <div class="filters">
+      <input id="search" type="search" placeholder="Pesquisar por título, nota ou etiqueta" autocomplete="off">
+      <div class="filter-row">
+        <select id="month-filter" aria-label="Filtrar por mês">
+          <option value="">Todos os meses</option>
+        </select>
+        <button id="clear-filters" class="link-btn hidden">Limpar filtros</button>
+      </div>
+      <div id="tag-filter" class="chips"></div>
+    </div>
+
+    <p id="count" class="count"></p>
+    <div id="timeline"></div>
+
+    <div id="empty" class="empty hidden">
+      <p id="empty-text">Ainda não há momentos registados.</p>
+      <button id="empty-action" class="btn primary">Registar o primeiro</button>
+    </div>
+  </section>
+
+  <!-- ================= DETALHE ================= -->
+  <section id="view-detail" class="view hidden">
+    <article id="detail-body"></article>
+  </section>
+
+  <!-- ================= FORMULÁRIO ================= -->
+  <section id="view-form" class="view hidden">
+    <div class="field">
+      <label for="f-title">Título</label>
+      <input id="f-title" type="text" maxlength="120" placeholder="O que aconteceu?">
+    </div>
+
+    <div class="field-pair">
+      <div class="field">
+        <label for="f-date">Data</label>
+        <input id="f-date" type="date">
+      </div>
+      <div class="field">
+        <label for="f-time">Hora <span class="opt">(opcional)</span></label>
+        <input id="f-time" type="time">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="f-note">Nota <span class="opt">(opcional)</span></label>
+      <textarea id="f-note" rows="4" placeholder="Detalhes, quem estava, o que se passou…"></textarea>
+    </div>
+
+    <div class="field">
+      <label for="f-tags">Etiquetas <span class="opt">(separadas por vírgula)</span></label>
+      <input id="f-tags" type="text" list="tag-suggestions" placeholder="família, viagem, trabalho" autocomplete="off">
+      <datalist id="tag-suggestions"></datalist>
+    </div>
+
+    <div class="field">
+      <label>Fotos <span class="opt">(até 5)</span></label>
+      <div class="photo-buttons">
+        <button id="btn-camera" class="btn ghost" type="button">Tirar foto</button>
+        <button id="btn-gallery" class="btn ghost" type="button">Escolher da galeria</button>
+      </div>
+      <input id="input-camera" type="file" accept="image/*" capture="environment" class="hidden-input">
+      <input id="input-gallery" type="file" accept="image/*" multiple class="hidden-input">
+      <p id="photo-status" class="hint"></p>
+      <div id="photo-preview" class="photo-grid"></div>
+    </div>
+
+    <div class="form-actions">
+      <button id="btn-save" class="btn primary">Guardar momento</button>
+      <button id="btn-cancel" class="btn ghost">Cancelar</button>
+    </div>
+  </section>
+
+  <!-- ================= DEFINIÇÕES ================= -->
+  <section id="view-settings" class="view hidden">
+    <h2 class="section-title">Os teus dados</h2>
+    <p id="stats" class="hint"></p>
+
+    <h2 class="section-title">Exportar</h2>
+    <div class="stack">
+      <button id="export-full" class="btn primary">Exportar tudo (com fotos)</button>
+      <button id="export-light" class="btn ghost">Exportar só os textos (JSON leve)</button>
+      <button id="export-csv" class="btn ghost">Exportar CSV</button>
+    </div>
+    <p class="hint">A exportação completa inclui as imagens dentro do ficheiro JSON, por isso fica grande. É a única que permite restaurar tudo.</p>
+
+    <h2 class="section-title">Importar</h2>
+    <div class="stack">
+      <button id="btn-import" class="btn ghost">Importar ficheiro JSON</button>
+      <input id="input-import" type="file" accept="application/json,.json" class="hidden-input">
+    </div>
+    <p class="hint">Os momentos do ficheiro são adicionados aos que já tens. Nada é apagado.</p>
+
+    <h2 class="section-title">Lembrete de cópia de segurança</h2>
+    <div class="field">
+      <label for="f-interval">Avisar de quantos em quantos dias</label>
+      <input id="f-interval" type="number" min="0" max="365" step="1">
+      <p class="hint">Põe 0 para desligar o aviso.</p>
+    </div>
+    <p id="last-backup" class="hint"></p>
+
+    <h2 class="section-title danger-title">Zona perigosa</h2>
+    <button id="btn-wipe" class="btn danger">Apagar todos os momentos</button>
+
+    <p class="version">Momentos &middot; versão <span id="app-version"></span></p>
+  </section>
+
+</main>
+
+<button id="fab" class="fab" aria-label="Registar momento">+</button>
+
+<div id="lightbox" class="lightbox hidden">
+  <img id="lightbox-img" alt="Foto do momento">
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="js/db.js"></script>
+<script src="js/images.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
